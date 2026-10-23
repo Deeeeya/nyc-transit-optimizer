@@ -1,11 +1,4 @@
 from fastapi import FastAPI # using 'from' brings in one specific function from a package
-import os # import [] brings in the whole package
-import psycopg2
-import dotenv 
-
-dotenv.load_dotenv() # python-dotenv has a function called load_dotenv() that reads your .env file
-url = os.environ.get("DATABASE_URL") # how you grab an environment variable in Python
-conn = psycopg2.connect(url) # opens the database connection
 
 app = FastAPI()
 
