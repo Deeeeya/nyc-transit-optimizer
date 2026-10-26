@@ -1,0 +1,39 @@
+import pandas as pd
+from psycopg2.extras import execute_values
+from database import get_connection
+
+INSERT_SQL = """
+    INSERT INTO routes (route_id, route_short_name, route_long_name, route_type, route_color, route_text_color, route_sort_order)
+    VALUES %s
+    ON CONFLICT (route_id) DO NOTHING
+"""
+
+df = pd.read_csv("data/gtfs_subway/routes.txt", dtype=str)
+
+rows = []
+for _, row in df.iterrows():
+    rows.append((
+        row["route_id"],
+        row["route_short_name"],
+        row["route_long_name"],
+        int(row["route_type"]),
+        row["route_color"],
+        row["route_text_color"],
+        int(row["route_sort_order"]),
+    ))
+
+conn = get_connection()
+print("Connected to Supabase!")
+cur = conn.cursor()
+
+try:
+    execute_values(cur, INSERT_SQL, rows)
+    conn.commit()
+    print(f"Loaded {len(rows)} routes (existing ones skipped)")
+except Exception:
+    conn.rollback()
+    print("Something went wrong, rolled back. Nothing was saved.")
+    raise
+finally:
+    cur.close()
+    conn.close()
