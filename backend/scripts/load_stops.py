@@ -1,6 +1,5 @@
 import pandas as pd # 'as pd' part gives pandas a nickname, so you write 'pd.' instead of 'pandas.' everywhere
-from psycopg2.extras import execute_values
-from database import get_connection
+from scripts.loader_utils import bulk_insert
 
 # triple quotes let a string span multiple lines, the ON CONFLICT line means if a stop already exists, do nothing and skip it
 INSERT_SQL = """  
@@ -48,19 +47,4 @@ for row in rows:
 # stations first, so platforms' parents already exist
 ordered_rows = stations + platforms # partitioning
 
-# This calls your function from database.py, and the connection it returns gets stored in conn.
-conn = get_connection() # the open phone line to Supabase.
-print("Connected to Supabase!")
-cur = conn.cursor() # curr (the cursor) is what actually speaks SQL over that line. You send queries through it.
- 
-try: # attempt the work
-    execute_values(cur, INSERT_SQL, ordered_rows) # With this, your SQL has one single %s after VALUES, and it fills in all the rows for you.
-    conn.commit()
-    print(f"Loaded {len(ordered_rows)} stops (existing ones skipped)") # The f before the quotes lets you put variables inside { }. It’s the same as JS template literals: `Loaded ${count} stops`.
-except Exception: # something broke → undo it
-    conn.rollback() # if something breaks halfway, it cancels everything, so you never end up with half a table
-    print("Something went wrong, rolled back. Nothing was saved.")
-    raise # re-shows the original error after rolling back, so you can still see what went wrong.
-finally: # ALWAYS runs, success or failure → clean up
-    cur.close()
-    conn.close()
+bulk_insert(INSERT_SQL, rows, "stops")
