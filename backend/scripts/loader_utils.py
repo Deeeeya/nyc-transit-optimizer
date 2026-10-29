@@ -3,7 +3,6 @@ from database import get_connection
 
 def bulk_insert(sql, rows, label, page_size=1000):
     conn = get_connection() # This calls your function from database.py, and the connection it returns gets stored in conn.
-    print("Connected to Supabase!")
     cur = conn.cursor() # curr (the cursor) is what actually speaks SQL over that line. You send queries through it.
 
     try: # attempt the work
