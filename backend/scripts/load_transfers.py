@@ -7,15 +7,21 @@ INSERT_SQL = """
     ON CONFLICT (from_stop_id, to_stop_id) DO NOTHING
 """
 
-df = pd.read_csv("data/gtfs_subway/transfers.txt", dtype=str)
 
-rows = []
-for _, row in df.iterrows():
-    rows.append((
-        row["from_stop_id"],
-        row["to_stop_id"],
-        int(row["transfer_type"]),
-        int(row["min_transfer_time"]),
-    ))
+def load():
+    df = pd.read_csv("data/gtfs_subway/transfers.txt", dtype=str)
 
-bulk_insert(INSERT_SQL, rows, "transfers")
+    rows = []
+    for _, row in df.iterrows():
+        rows.append((
+            row["from_stop_id"],
+            row["to_stop_id"],
+            int(row["transfer_type"]),
+            int(row["min_transfer_time"]),
+        ))
+
+    bulk_insert(INSERT_SQL, rows, "transfers")
+
+
+if __name__ == "__main__":
+    load()

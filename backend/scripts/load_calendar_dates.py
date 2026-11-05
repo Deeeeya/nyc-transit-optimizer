@@ -13,15 +13,20 @@ def to_date(value):
     return datetime.strptime(value, "%Y%m%d").date()
 
 
-df = pd.read_csv("data/gtfs_subway/calendar_dates.txt", dtype=str)
+def load():
+    df = pd.read_csv("data/gtfs_subway/calendar_dates.txt", dtype=str)
 
-rows = []
-for _, row in df.iterrows():
-    rows.append((
-        row["service_id"],
-        to_date(row["date"]),
-        int(row["exception_type"]),
-    ))
+    rows = []
+    for _, row in df.iterrows():
+        rows.append((
+            row["service_id"],
+            to_date(row["date"]),
+            int(row["exception_type"]),
+        ))
 
 
-bulk_insert(INSERT_SQL, rows, "calendar dates")
+    bulk_insert(INSERT_SQL, rows, "calendar dates")
+
+
+if __name__ == "__main__":
+    load()

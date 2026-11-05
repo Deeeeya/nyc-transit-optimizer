@@ -17,21 +17,26 @@ def to_date(value):
     return datetime.strptime(value, "%Y%m%d").date() # strptime means “string parse time”: it turns text into a date. / "%Y%m%d" describes the text’s format: %Y = 4-digit year, %m = month, %d = day. So it reads 2026 / 05 / 26. / .date() keeps just the date part and drops the time.
 
 
-df = pd.read_csv("data/gtfs_subway/calendar.txt", dtype=str)
+def load():
+    df = pd.read_csv("data/gtfs_subway/calendar.txt", dtype=str)
 
-rows = []
-for _, row in df.iterrows():
-    rows.append((
-        row["service_id"],
-        to_bool(row["monday"]),
-        to_bool(row["tuesday"]),
-        to_bool(row["wednesday"]),
-        to_bool(row["thursday"]),
-        to_bool(row["friday"]),
-        to_bool(row["saturday"]),
-        to_bool(row["sunday"]),
-        to_date(row["start_date"]),
-        to_date(row["end_date"]),
-    ))
+    rows = []
+    for _, row in df.iterrows():
+        rows.append((
+            row["service_id"],
+            to_bool(row["monday"]),
+            to_bool(row["tuesday"]),
+            to_bool(row["wednesday"]),
+            to_bool(row["thursday"]),
+            to_bool(row["friday"]),
+            to_bool(row["saturday"]),
+            to_bool(row["sunday"]),
+            to_date(row["start_date"]),
+            to_date(row["end_date"]),
+        ))
 
-bulk_insert(INSERT_SQL, rows, "calendar services")
+    bulk_insert(INSERT_SQL, rows, "calendar services")
+
+
+if __name__ == "__main__":
+    load()

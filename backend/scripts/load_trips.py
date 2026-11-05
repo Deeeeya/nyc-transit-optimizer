@@ -7,16 +7,22 @@ INSERT_SQL = """
     ON CONFLICT (trip_id) DO NOTHING
 """
 
-df = pd.read_csv("data/gtfs_subway/trips.txt", dtype=str)
 
-rows = []
-for _, row in df.iterrows():
-    rows.append((
-        row["trip_id"],
-        row["route_id"],
-        row["service_id"],
-        row["trip_headsign"],
-        int(row["direction_id"]),
-    ))
+def load():
+    df = pd.read_csv("data/gtfs_subway/trips.txt", dtype=str)
 
-bulk_insert(INSERT_SQL, rows, "trips")
+    rows = []
+    for _, row in df.iterrows():
+        rows.append((
+            row["trip_id"],
+            row["route_id"],
+            row["service_id"],
+            row["trip_headsign"],
+            int(row["direction_id"]),
+        ))
+
+    bulk_insert(INSERT_SQL, rows, "trips")
+
+
+if __name__ == "__main__":
+    load()
