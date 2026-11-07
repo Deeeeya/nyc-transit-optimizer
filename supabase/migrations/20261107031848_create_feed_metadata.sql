@@ -1,0 +1,8 @@
+CREATE TABLE feed_metadata (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    fingerprint TEXT NOT NULL,
+    feed_version TEXT NOT NULL,
+    loaded_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+ALTER TABLE feed_metadata ENABLE ROW LEVEL SECURITY;
